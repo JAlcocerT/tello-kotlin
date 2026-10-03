@@ -48,15 +48,14 @@ You also do not need a Play Store listing, PGP key, SSH key on the phone, or an 
 
 Do this once. Do not create a new key for later releases.
 
-Choose a directory outside the Git repository and restrict newly created files
-to your user.
-
-Replace `/secure/off-repo/path` with a real private location:
+Choose a directory outside the Git repository and restrict it to your user. On
+this PC, use this user-owned location (do not run these commands as `root`):
 
 ```bash
 umask 077
-mkdir -p /secure/off-repo/path/tello-native
-cd /secure/off-repo/path/tello-native
+mkdir -p /home/jalcocert/.local/share/tello-signing
+chmod 700 /home/jalcocert/.local/share/tello-signing
+cd /home/jalcocert/.local/share/tello-signing
 ```
 
 On this PC, make the locally installed JDK tools available first:
@@ -82,6 +81,9 @@ keytool -genkeypair \
 
 1. A strong `keystore` password.
 2. Certificate identity fields. They identify the certificate owner; they are not displayed in the app UI.
+
+For the final country-code question, enter the two-letter ISO code `ES`, not a
+postal code. For example, use `L=Seville`, `ST=Seville`, and `C=ES`.
 
 For PKCS#12, use the same password for the keystore and key.
 
@@ -175,7 +177,7 @@ On Linux, return to the private signing directory and create a single-line
 Base64 representation:
 
 ```bash
-cd /secure/off-repo/path/tello-native
+cd /home/jalcocert/.local/share/tello-signing
 base64 -w 0 tello-native-release.p12 > tello-native-release.p12.base64
 wc -c tello-native-release.p12.base64
 ```
@@ -238,7 +240,7 @@ export JAVA_HOME=/home/jalcocert/.local/share/tello-android/jdk
 export ANDROID_HOME=/home/jalcocert/.local/share/tello-android/sdk
 export PATH="$JAVA_HOME/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/36.0.0:$PATH"
 
-export ANDROID_KEYSTORE_PATH=/secure/off-repo/path/tello-native/tello-native-release.p12
+export ANDROID_KEYSTORE_PATH=/home/jalcocert/.local/share/tello-signing/tello-native-release.p12
 export ANDROID_KEY_ALIAS=tello-native
 read -rsp "Keystore password: " ANDROID_KEYSTORE_PASSWORD
 echo

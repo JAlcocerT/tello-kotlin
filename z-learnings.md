@@ -257,19 +257,23 @@ until a physical Android phone and Tello are used:
 Local build paths:
 
 ```text
-android-native/app/build/outputs/apk/debug/app-debug.apk
-android-native/app/build/outputs/apk/release/app-release.apk
+app/build/outputs/apk/debug/app-debug.apk
+app/build/outputs/apk/release/app-release.apk
 ```
 
-Checksums at the end of the PC test session:
+After moving the Android project into its standalone repository, the clean
+debug build produced:
 
 ```text
-Debug:   e3ed24d9f2653825dbcbec2109bc777ca570c1fa2f2217b5dc28426ef9b9b4bf
-Release: bffc63d0f5e7f9cadc1986a2ecf90fd27b2dc8643f26681ae2aa91b21f025281
+Debug: feb300d50d0e31cfa8c054ed3890b1cd8f3b976aca37a0bf46e803bc8de0bdb0
 ```
 
 These generated APKs are ignored by Git. Rebuilding after any source change
 will produce different checksums.
+
+The standalone repository was tested with `testDebugUnitTest assembleDebug`;
+all 44 Gradle tasks completed successfully. A permanently signed release APK
+has not yet been built in this repository.
 
 ## Obtainium and GitHub releases
 
@@ -295,12 +299,15 @@ The first production keystore must remain the signing key for every future
 update. A debug APK or locally test-signed release APK cannot be upgraded in
 place to an APK signed by a different key.
 
-The workflow configuration is committed, but it has not yet run on GitHub and
-the branch has not been pushed as part of this local implementation session.
+The standalone project and root-relative workflow are committed and pushed to
+the public repository at `https://github.com/JAlcocerT/tello-kotlin`. The
+release workflow has not yet run because the four secrets and first release
+tag have not been added.
 
 ## Remaining physical test plan
 
-1. Create the permanent release keystore and store a secure backup.
+1. Correctly regenerate the permanent release keystore with `C=ES`, secure it
+   with user-only permissions, and store two encrypted backups.
 2. Build a release APK using that permanent key.
 3. Install it on the target phone through ADB or a direct APK transfer.
 4. With propellers removed, test Wi-Fi selection, command mode, telemetry,
@@ -310,11 +317,12 @@ the branch has not been pushed as part of this local implementation session.
 7. Confirm movement, altitude, yaw, STOP, slow/fast mode, and acceleration.
 8. Background the app while hovering and verify the safety landing.
 9. Test one flip direction at a time only after basic control is reliable.
-10. Push the branch, configure GitHub secrets, tag a release, and add the
-    repository URL to Obtainium.
+10. Configure GitHub secrets, tag a release, and add the repository URL to
+    Obtainium.
 
-## Repository hygiene
+## Standalone repository
 
-The Android implementation was committed without including pre-existing local
-changes under `desktop-rust-route/`. Those route files remain separate,
-uncommitted user work.
+The Android implementation now lives at `/home/jalcocert/Desktop/tello-kotlin`
+with the Gradle project at the repository root. Generated build directories,
+local SDK configuration, keystores, and Base64 key material are ignored. No
+signing artifact was copied into Git.
