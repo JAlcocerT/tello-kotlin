@@ -61,6 +61,12 @@ identity field, but `C` is supposed to contain a two-letter country code. No
 release has used that key, so abandon it now and make the final key with
 `C=ES`. Never replace the new key after distributing the first APK.
 
+Current status on this PC: the replacement file already exists at
+`/home/jalcocert/.local/share/tello-signing/tello-native-release.p12`, is owned
+by `jalcocert`, and has mode `600`. **Do not run the generation command again**
+if that is the key you just created. Continue at "Record and verify the public
+fingerprint" below.
+
 First restrict access to the abandoned root-owned directory:
 
 ```bash
@@ -121,7 +127,7 @@ Android recommends a signing-key validity of at least 25 years.
 
 The `10000` days above is roughly 27 years.
 
-### Record the public fingerprint
+### Record and verify the public fingerprint
 
 Run:
 
@@ -137,16 +143,9 @@ fingerprint beginning `A8:9B:4C:46`.
 
 The fingerprint is safe to share; the `.p12` file and passwords are not.
 
-Optionally export the public certificate for future verification:
-
-```bash
-keytool -exportcert -rfc \
-  -keystore tello-native-release.p12 \
-  -alias tello-native \
-  -file tello-native-release-certificate.pem
-```
-
-The `.pem` certificate is public and cannot sign an APK.
+The `keytool -list -v` command above is the verification step. Exporting a
+`.pem` file is unnecessary for this release process and is intentionally not
+part of the procedure.
 
 ## Step 2: back up the key before releasing anything
 
