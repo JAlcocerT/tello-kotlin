@@ -19,10 +19,20 @@ and the [Obtainium project](https://github.com/ImranR98/Obtainium).
 - Release asset format: `tello-native-android-vMAJOR.MINOR.PATCH.apk`
 - Release workflow: `.github/workflows/android-release.yml`
 - Workflow trigger: pushing an `android-v*` tag to GitHub
-- Intended GitHub repository: `https://github.com/JAlcocerT/tello-kotlin`
+- Public GitHub repository: `https://github.com/JAlcocerT/tello-kotlin`
 
-The local repository must have an initial commit before `gh repo create --push`
-can create and populate the public GitHub repository.
+The repository and workflow are already on GitHub. Resume at Step 1; do not
+re-run repository creation.
+
+Current progress:
+
+- [x] Standalone Android repository created on local `main`
+- [x] Public GitHub repository created and pushed
+- [x] Unit tests and debug APK build passed on this PC
+- [ ] Correct permanent key created and backed up
+- [ ] GitHub Actions secrets configured
+- [ ] Signed release tested and published
+- [ ] Obtainium configured on the phone
 
 ## What you need
 
@@ -36,7 +46,7 @@ Keep these concepts separate:
 | Key alias | No, but stored as a Secret here | Password manager and GitHub Secret | Selects the key inside the keystore |
 | Key password | Yes | Password manager and GitHub Secret | Unlocks the signing key |
 | SHA-256 certificate fingerprint | No | Password manager/release records | Confirms future APKs use the same key |
-| Base64 keystore text | Yes | Temporary local file/GitHub Secret | Transfers the binary keystore into Actions |
+| Base64 keystore text | Yes | Piped directly to GitHub Secret | Transfers the binary keystore into Actions |
 | Signed release APK | No | GitHub Release asset | File Obtainium downloads and installs |
 | Public repository URL | No | Obtainium | Source Obtainium checks for updates |
 
@@ -44,9 +54,18 @@ You do **not** need a GitHub token inside Obtainium for a normal public reposito
 
 You also do not need a Play Store listing, PGP key, SSH key on the phone, or an Obtainium-specific signing key.
 
-## Step 1: create the permanent Android signing key
+## Step 1: replace the first key with the final permanent key
 
-Do this once. Do not create a new key for later releases.
+The first key was created with `C=41710`. Android would normally ignore that
+identity field, but `C` is supposed to contain a two-letter country code. No
+release has used that key, so abandon it now and make the final key with
+`C=ES`. Never replace the new key after distributing the first APK.
+
+First restrict access to the abandoned root-owned directory:
+
+```bash
+sudo chmod 700 /secure/off-repo/path/tello-native
+```
 
 Choose a directory outside the Git repository and restrict it to your user. On
 this PC, use this user-owned location (do not run these commands as `root`):
@@ -65,7 +84,8 @@ export JAVA_HOME=/home/jalcocert/.local/share/tello-android/jdk
 export PATH="$JAVA_HOME/bin:$PATH"
 ```
 
-Generate a PKCS#12 keystore with the JDK `keytool`:
+Generate the final PKCS#12 keystore. The explicit `-dname` prevents the country
+code from being entered incorrectly again:
 
 ```bash
 keytool -genkeypair \
@@ -74,16 +94,15 @@ keytool -genkeypair \
   -alias tello-native \
   -keyalg RSA \
   -keysize 4096 \
-  -validity 10000
+  -validity 10000 \
+  -dname "CN=JAlcocerT, OU=JAlcocerTech, O=JAlcocerTech, L=Seville, ST=Seville, C=ES"
+
+chmod 600 tello-native-release.p12
+stat -c '%U:%G %a %n' tello-native-release.p12
 ```
 
-`keytool` asks for:
-
-1. A strong `keystore` password.
-2. Certificate identity fields. They identify the certificate owner; they are not displayed in the app UI.
-
-For the final country-code question, enter the two-letter ISO code `ES`, not a
-postal code. For example, use `L=Seville`, `ST=Seville`, and `C=ES`.
+`keytool` asks for a strong keystore password. The final `stat` output must show
+your user as owner and permission mode `600`.
 
 For PKCS#12, use the same password for the keystore and key.
 
@@ -112,7 +131,9 @@ keytool -list -v \
   -alias tello-native
 ```
 
-Copy the SHA-256 certificate fingerprint into the password-manager entry.
+Confirm the owner contains `C=ES`, then copy the new SHA-256 certificate
+fingerprint into the password-manager entry. Do not keep using the earlier
+fingerprint beginning `A8:9B:4C:46`.
 
 The fingerprint is safe to share; the `.p12` file and passwords are not.
 
@@ -148,88 +169,74 @@ If this key or its password is permanently lost, Android users cannot update the
 
 The recovery is a new package ID plus an uninstall/reinstall.
 
-## Step 3: create the public GitHub repository
+## Step 3: confirm the completed GitHub repository setup
 
-From the `tello-kotlin` directory, make the initial commit first:
+This step is already complete. Verify it; do not run `git init` or
+`gh repo create` again:
 
 ```bash
 cd ~/Desktop/tello-kotlin
-git branch -m main
-git add .
-git commit -m "Initial native Android Tello controller"
-```
-
-Then create the public repository and push that commit:
-
-```bash
-gh repo create tello-kotlin --public --source=. --remote=origin --push
+git status --short --branch
 git remote -v
+gh repo view JAlcocerT/tello-kotlin \
+  --json nameWithOwner,isPrivate,url,defaultBranchRef
 ```
 
-The release tag must point to a commit containing the Gradle project and
-`.github/workflows/android-release.yml`.
+Expected: clean `main`, remote URL ending in `JAlcocerT/tello-kotlin.git`,
+`"isPrivate":false`, and default branch `main`.
 
 Do not push a release tag yet; configure signing first.
 
-## Step 4: prepare the keystore for GitHub Actions
+## Step 4: check the key before uploading it
 
-On Linux, return to the private signing directory and create a single-line
-Base64 representation:
+Run these checks from the private signing directory:
 
 ```bash
 cd /home/jalcocert/.local/share/tello-signing
-base64 -w 0 tello-native-release.p12 > tello-native-release.p12.base64
-wc -c tello-native-release.p12.base64
+test -s tello-native-release.p12
+test "$(stat -c '%a' tello-native-release.p12)" = 600
+keytool -list -v \
+  -keystore tello-native-release.p12 \
+  -alias tello-native
 ```
 
-The Base64 file is still secret. It is not encryption; it is only a text
-representation that GitHub Actions can restore into the original binary file.
+Do not continue unless the alias is `tello-native`, owner ends in `C=ES`, and
+the displayed SHA-256 matches the one saved in your password manager.
 
 ## Step 5: add the four GitHub Actions secrets
 
-Open the new GitHub repository and go to:
-
-**Settings → Secrets and variables → Actions → New repository secret**
-
-Create these exact names:
-
-### `ANDROID_KEYSTORE_BASE64`
-
-Value: the full single-line contents of
-`tello-native-release.p12.base64`.
-
-On Linux, this copies it to the clipboard without printing it in the terminal:
+Upload all four with GitHub CLI. These commands do not create a Base64 file and
+do not print the password:
 
 ```bash
-xclip -selection clipboard < tello-native-release.p12.base64
+cd /home/jalcocert/Desktop/tello-kotlin
+
+base64 -w 0 /home/jalcocert/.local/share/tello-signing/tello-native-release.p12 \
+  | gh secret set ANDROID_KEYSTORE_BASE64 --repo JAlcocerT/tello-kotlin
+
+read -rsp "Keystore password: " TELLO_KEYSTORE_PASSWORD
+echo
+printf '%s' "$TELLO_KEYSTORE_PASSWORD" \
+  | gh secret set ANDROID_KEYSTORE_PASSWORD --repo JAlcocerT/tello-kotlin
+printf '%s' 'tello-native' \
+  | gh secret set ANDROID_KEY_ALIAS --repo JAlcocerT/tello-kotlin
+printf '%s' "$TELLO_KEYSTORE_PASSWORD" \
+  | gh secret set ANDROID_KEY_PASSWORD --repo JAlcocerT/tello-kotlin
+unset TELLO_KEYSTORE_PASSWORD
+
+gh secret list --repo JAlcocerT/tello-kotlin
 ```
 
-If `xclip` is unavailable, use the desktop file editor carefully and ensure no
-line breaks are introduced.
-
-### `ANDROID_KEYSTORE_PASSWORD`
-
-Value: the strong keystore password stored in the password manager.
-
-### `ANDROID_KEY_ALIAS`
-
-Value:
-
-```text
-tello-native
-```
-
-### `ANDROID_KEY_PASSWORD`
-
-Value: the same password used for the PKCS#12 keystore.
+The final command displays secret names and update times, not their values.
+Confirm that all four expected names appear.
 
 GitHub Secrets are encrypted variables made available only where a workflow
 explicitly references them. See [GitHub's Secrets documentation](https://docs.github.com/en/actions/concepts/security/secrets).
 
-Once all four secrets exist, delete only the temporary Base64 file from the
-workstation. Keep the original `.p12` and its backups.
+Keep the original `.p12` and both encrypted backups. No temporary Base64 file
+is created by the commands above.
 
-## Step 6: optionally test signing locally with the permanent key
+## Step 6: test signing locally with the permanent key
 
 This step confirms the alias and passwords before consuming a release tag.
 
@@ -248,19 +255,12 @@ export ANDROID_KEYSTORE_PASSWORD
 export ANDROID_KEY_PASSWORD="$ANDROID_KEYSTORE_PASSWORD"
 
 ./gradlew testDebugUnitTest lintDebug assembleRelease
-```
 
-Clear the password variables afterward:
-
-```bash
-unset ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_PASSWORD
-```
-
-Verify the resulting APK:
-
-```bash
 apksigner verify --verbose --print-certs \
   app/build/outputs/apk/release/app-release.apk
+
+sha256sum app/build/outputs/apk/release/app-release.apk
+unset ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_PASSWORD
 ```
 
 Confirm that its SHA-256 certificate fingerprint matches the fingerprint saved
@@ -281,6 +281,8 @@ The working tree should be clean. Create and push an annotated tag:
 ```bash
 git tag -a android-v0.1.0 -m "Tello Native Android 0.1.0"
 git push origin android-v0.1.0
+
+gh run watch --repo JAlcocerT/tello-kotlin --exit-status
 ```
 
 The tag push triggers the Android release workflow. It will:
@@ -293,8 +295,8 @@ The tag push triggers the Android release workflow. It will:
 6. Create a GitHub Release.
 7. Upload `tello-native-android-v0.1.0.apk` as its asset.
 
-Monitor **GitHub repository → Actions → Android release**. A red run means no
-usable release was produced; open the failed step before creating another tag.
+`gh run watch` waits for the tag-triggered workflow and returns an error if it
+fails. A failed run means no usable release was produced.
 
 The workflow uses GitHub's increasing run number as Android's `versionCode`.
 Do not replace this release workflow with a newly named workflow that restarts
@@ -314,12 +316,20 @@ The `android-v0.1.0` release should contain exactly one relevant APK:
 tello-native-android-v0.1.0.apk
 ```
 
-Download it to a PC and verify it again:
+Download it into a dedicated directory and verify it again:
 
 ```bash
+mkdir -p /home/jalcocert/Downloads/tello-native-v0.1.0
+cd /home/jalcocert/Downloads/tello-native-v0.1.0
+gh release download android-v0.1.0 \
+  --repo JAlcocerT/tello-kotlin \
+  --pattern '*.apk'
+
 apksigner verify --verbose --print-certs \
   tello-native-android-v0.1.0.apk
 sha256sum tello-native-android-v0.1.0.apk
+
+gh release view android-v0.1.0 --repo JAlcocerT/tello-kotlin
 ```
 
 Check that:
@@ -381,7 +391,7 @@ For each version:
 2. Commit and merge them into the GitHub release branch.
 3. Choose a larger semantic version.
 4. Tag the exact tested commit.
-5. Push the tag to the `github` remote.
+5. Push the tag to the `origin` remote.
 6. Wait for the green Actions run.
 7. Verify the release asset and certificate.
 8. Ask Obtainium to check for updates.
@@ -456,8 +466,8 @@ Read the current official guidance before a public launch:
 
 Before the first Obtainium release:
 
-- [ ] Public GitHub repository exists.
-- [ ] Android project and workflow are committed and pushed to GitHub `main`.
+- [x] Public GitHub repository exists.
+- [x] Android project and workflow are committed and pushed to GitHub `main`.
 - [ ] Permanent `.p12` signing key exists outside the repository.
 - [ ] Two encrypted backups exist.
 - [ ] Password manager contains alias, passwords, package ID, and fingerprint.
