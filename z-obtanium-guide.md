@@ -15,7 +15,7 @@ and the [Obtainium project](https://github.com/ImranR98/Obtainium).
 
 - Android package ID: `tech.jalcocer.tello`
 - Release tag format: `android-vMAJOR.MINOR.PATCH`
-- First suggested tag: `android-v0.1.0`
+- First successful-release candidate: `android-v0.1.1`
 - Release asset format: `tello-native-android-vMAJOR.MINOR.PATCH.apk`
 - Release workflow: `.github/workflows/android-release.yml`
 - Workflow trigger: pushing an `android-v*` tag to GitHub
@@ -29,9 +29,11 @@ Current progress:
 - [x] Standalone Android repository created on local `main`
 - [x] Public GitHub repository created and pushed
 - [x] Unit tests and debug APK build passed on this PC
-- [ ] Correct permanent key created and backed up
-- [ ] GitHub Actions secrets configured
-- [ ] Signed release tested and published
+- [x] Correct permanent key created and locally backed up
+- [x] GitHub Actions secrets configured
+- [x] Signed release built and verified locally
+- [x] `android-v0.1.0` CI attempt diagnosed as an obsolete SDK setup failure
+- [ ] Corrected `android-v0.1.1` release published
 - [ ] Obtainium configured on the phone
 
 ## What you need
@@ -278,8 +280,8 @@ git status --short
 The working tree should be clean. Create and push an annotated tag:
 
 ```bash
-git tag -a android-v0.1.0 -m "Tello Native Android 0.1.0"
-git push origin android-v0.1.0
+git tag -a android-v0.1.1 -m "Tello Native Android 0.1.1"
+git push origin android-v0.1.1
 
 gh run watch --repo JAlcocerT/tello-kotlin --exit-status
 ```
@@ -292,7 +294,7 @@ The tag push triggers the Android release workflow. It will:
 4. Run the JVM tests.
 5. Build and sign the minified release APK.
 6. Create a GitHub Release.
-7. Upload `tello-native-android-v0.1.0.apk` as its asset.
+7. Upload `tello-native-android-v0.1.1.apk` as its asset.
 
 `gh run watch` waits for the tag-triggered workflow and returns an error if it
 fails. A failed run means no usable release was produced.
@@ -309,26 +311,26 @@ Open:
 https://github.com/JAlcocerT/tello-kotlin/releases
 ```
 
-The `android-v0.1.0` release should contain exactly one relevant APK:
+The `android-v0.1.1` release should contain exactly one relevant APK:
 
 ```text
-tello-native-android-v0.1.0.apk
+tello-native-android-v0.1.1.apk
 ```
 
 Download it into a dedicated directory and verify it again:
 
 ```bash
-mkdir -p /home/jalcocert/Downloads/tello-native-v0.1.0
-cd /home/jalcocert/Downloads/tello-native-v0.1.0
-gh release download android-v0.1.0 \
+mkdir -p /home/jalcocert/Downloads/tello-native-v0.1.1
+cd /home/jalcocert/Downloads/tello-native-v0.1.1
+gh release download android-v0.1.1 \
   --repo JAlcocerT/tello-kotlin \
   --pattern '*.apk'
 
 apksigner verify --verbose --print-certs \
-  tello-native-android-v0.1.0.apk
-sha256sum tello-native-android-v0.1.0.apk
+  tello-native-android-v0.1.1.apk
+sha256sum tello-native-android-v0.1.1.apk
 
-gh release view android-v0.1.0 --repo JAlcocerT/tello-kotlin
+gh release view android-v0.1.1 --repo JAlcocerT/tello-kotlin
 ```
 
 Check that:
@@ -375,7 +377,7 @@ On the Android phone:
 
 6. Leave prereleases disabled unless you intentionally publish beta builds.
 7. Save/add the app.
-8. Select the detected `android-v0.1.0` release and install it.
+8. Select the detected `android-v0.1.1` release and install it.
 9. When Android asks, allow Obtainium to install unknown apps.
 
 Obtainium obtains release data from GitHub and installs the APK asset. It does
@@ -400,8 +402,8 @@ Example for the next patch release:
 ```bash
 git switch main
 git pull --ff-only origin main
-git tag -a android-v0.1.1 -m "Tello Native Android 0.1.1"
-git push origin android-v0.1.1
+git tag -a android-v0.1.2 -m "Tello Native Android 0.1.2"
+git push origin android-v0.1.2
 ```
 
 Android accepts the Obtainium update when all of these remain true:
@@ -414,18 +416,15 @@ Android accepts the Obtainium update when all of these remain true:
 ## If a release tag or workflow fails
 
 Do not move or overwrite a public release tag after users may have installed
-it. Fix the problem in a new commit and use the next version tag, such as
-`android-v0.1.1`.
+it. Fix the problem in a new commit and use the next version tag.
 
-Before the first public install, a bad unpublished tag can be removed carefully:
+The `android-v0.1.0` workflow failed before it reached the key or build because
+`setup-android@v3` requested the removed SDK package named `tools`. Keep that
+tag as failed history. The workflow now uses the Node 24 action releases and
+installs only `platform-tools`, Android platform 37.2, and build-tools 36.0.0.
+The corrected release uses `android-v0.1.1`.
 
-```bash
-git tag -d android-v0.1.0
-git push origin :refs/tags/android-v0.1.0
-```
-
-Also delete the corresponding draft/failed GitHub Release if one was created.
-Once users have installed a version, prefer a new higher version instead.
+Do not delete or move `android-v0.1.0`; continue with the higher corrected tag.
 
 ## Key rotation and loss
 
@@ -473,7 +472,8 @@ Before the first Obtainium release:
 - [ ] Four GitHub Actions secrets are configured.
 - [ ] Permanent key successfully signs a local release APK.
 - [ ] Local certificate fingerprint matches the recorded fingerprint.
-- [ ] `android-v0.1.0` tag is pushed to the GitHub remote.
+- [x] Failed `android-v0.1.0` tag is retained as diagnostic history.
+- [ ] Corrected `android-v0.1.1` tag is pushed to the GitHub remote.
 - [ ] GitHub Actions run is green.
 - [ ] Public release contains the correctly named APK.
 - [ ] Downloaded release APK signature is verified.

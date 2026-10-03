@@ -272,8 +272,9 @@ These generated APKs are ignored by Git. Rebuilding after any source change
 will produce different checksums.
 
 The standalone repository was tested with `testDebugUnitTest assembleDebug`;
-all 44 Gradle tasks completed successfully. A permanently signed release APK
-has not yet been built in this repository.
+all 44 Gradle tasks completed successfully. The permanent key was then used for
+`testDebugUnitTest lintDebug assembleRelease`; all 86 tasks completed and
+`apksigner` verified the APK with v2 signing and the expected certificate.
 
 ## Obtainium and GitHub releases
 
@@ -300,15 +301,19 @@ update. A debug APK or locally test-signed release APK cannot be upgraded in
 place to an APK signed by a different key.
 
 The standalone project and root-relative workflow are committed and pushed to
-the public repository at `https://github.com/JAlcocerT/tello-kotlin`. The
-release workflow has not yet run because the four secrets and first release
-tag have not been added.
+the public repository at `https://github.com/JAlcocerT/tello-kotlin`. All four
+GitHub secrets are configured. The `android-v0.1.0` run failed before reaching
+the key or Gradle because `android-actions/setup-android@v3` requested the
+removed Android SDK package `tools`. The workflow was updated to the Node 24
+action releases (`checkout@v7`, `setup-java@v6`, `setup-android@v4`, and
+`action-gh-release@v3`); setup-android now installs only the three packages the
+project needs. The failed tag is retained, and `android-v0.1.1` is the corrected
+release candidate.
 
 ## Remaining physical test plan
 
-1. Correctly regenerate the permanent release keystore with `C=ES`, secure it
-   with user-only permissions, and store two encrypted backups.
-2. Build a release APK using that permanent key.
+1. Store a second encrypted/off-device backup of the final signing key.
+2. Publish and verify the corrected `android-v0.1.1` GitHub release.
 3. Install it on the target phone through ADB or a direct APK transfer.
 4. With propellers removed, test Wi-Fi selection, command mode, telemetry,
    video, photo, and recording.
