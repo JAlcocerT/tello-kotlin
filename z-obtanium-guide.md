@@ -33,7 +33,7 @@ Current progress:
 - [x] GitHub Actions secrets configured
 - [x] Signed release built and verified locally
 - [x] `android-v0.1.0` CI attempt diagnosed as an obsolete SDK setup failure
-- [ ] Corrected `android-v0.1.1` release published
+- [x] Corrected `android-v0.1.1` release published and independently verified
 - [ ] Obtainium configured on the phone
 
 ## What you need
@@ -466,17 +466,17 @@ Before the first Obtainium release:
 
 - [x] Public GitHub repository exists.
 - [x] Android project and workflow are committed and pushed to GitHub `main`.
-- [ ] Permanent `.p12` signing key exists outside the repository.
+- [x] Permanent `.p12` signing key exists outside the repository.
 - [ ] Two encrypted backups exist.
 - [ ] Password manager contains alias, passwords, package ID, and fingerprint.
-- [ ] Four GitHub Actions secrets are configured.
-- [ ] Permanent key successfully signs a local release APK.
-- [ ] Local certificate fingerprint matches the recorded fingerprint.
+- [x] Four GitHub Actions secrets are configured.
+- [x] Permanent key successfully signs a local release APK.
+- [x] Local certificate fingerprint matches the recorded fingerprint.
 - [x] Failed `android-v0.1.0` tag is retained as diagnostic history.
-- [ ] Corrected `android-v0.1.1` tag is pushed to the GitHub remote.
-- [ ] GitHub Actions run is green.
-- [ ] Public release contains the correctly named APK.
-- [ ] Downloaded release APK signature is verified.
+- [x] Corrected `android-v0.1.1` tag is pushed to the GitHub remote.
+- [x] GitHub Actions run is green.
+- [x] Public release contains the correctly named APK.
+- [x] Downloaded release APK signature is verified.
 - [ ] Debug/test-signed copy is uninstalled from the phone.
 - [ ] Obtainium is configured with the public repository URL.
 - [ ] First release installs successfully.

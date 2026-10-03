@@ -307,23 +307,30 @@ the key or Gradle because `android-actions/setup-android@v3` requested the
 removed Android SDK package `tools`. The workflow was updated to the Node 24
 action releases (`checkout@v7`, `setup-java@v6`, `setup-android@v4`, and
 `action-gh-release@v3`); setup-android now installs only the three packages the
-project needs. The failed tag is retained, and `android-v0.1.1` is the corrected
-release candidate.
+project needs. The failed tag is retained. The corrected `android-v0.1.1` run
+passed all steps in 3m30s and published a non-draft, non-prerelease APK:
+
+```text
+Asset: tello-native-android-v0.1.1.apk
+Size: 1,643,155 bytes
+SHA-256: e4a59705885a90580b26572daf6b41b92b0cc1e2aa2f662f23324c31c7e712a7
+Signing certificate: f0ada1be3083d3e37a5c3e9222d5978854e3c3c67a91a5323e42c3881337898e
+```
+
+The public asset was downloaded to the PC and independently passed
+`apksigner verify` using APK Signature Scheme v2.
 
 ## Remaining physical test plan
 
 1. Store a second encrypted/off-device backup of the final signing key.
-2. Publish and verify the corrected `android-v0.1.1` GitHub release.
-3. Install it on the target phone through ADB or a direct APK transfer.
-4. With propellers removed, test Wi-Fi selection, command mode, telemetry,
+2. Add the public repository URL to Obtainium and install `android-v0.1.1`.
+3. With propellers removed, test Wi-Fi selection, command mode, telemetry,
    video, photo, and recording.
-5. Play the saved MP4 and inspect the photo before flight.
-6. Fit propeller guards and test at low altitude in a clear indoor space.
-7. Confirm movement, altitude, yaw, STOP, slow/fast mode, and acceleration.
-8. Background the app while hovering and verify the safety landing.
-9. Test one flip direction at a time only after basic control is reliable.
-10. Configure GitHub secrets, tag a release, and add the repository URL to
-    Obtainium.
+4. Play the saved MP4 and inspect the photo before flight.
+5. Fit propeller guards and test at low altitude in a clear indoor space.
+6. Confirm movement, altitude, yaw, STOP, slow/fast mode, and acceleration.
+7. Background the app while hovering and verify the safety landing.
+8. Test one flip direction at a time only after basic control is reliable.
 
 ## Standalone repository
 
