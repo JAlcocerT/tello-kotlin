@@ -11,14 +11,14 @@ Kotlin project.
 
 - Repository: `https://github.com/JAlcocerT/tello-kotlin`
 - Package ID: `tech.jalcocer.tello`
-- Successful release: `android-v0.1.1`
-- Release asset: `tello-native-android-v0.1.1.apk`
-- Release page: `https://github.com/JAlcocerT/tello-kotlin/releases/tag/android-v0.1.1`
-- APK SHA-256: `e4a59705885a90580b26572daf6b41b92b0cc1e2aa2f662f23324c31c7e712a7`
+- Latest successful release: `android-v0.1.2`
+- Release asset: `tello-native-android-v0.1.2.apk`
+- Release page: `https://github.com/JAlcocerT/tello-kotlin/releases/tag/android-v0.1.2`
+- APK SHA-256: `670f08cfb87480279d11a2b71b5b555258d62325e17c896609acae94516b1bca`
 - Signing-certificate SHA-256:
   `f0ada1be3083d3e37a5c3e9222d5978854e3c3c67a91a5323e42c3881337898e`
-- Corrected workflow run: `37141182693`
-- Result: all release steps passed in 3m30s
+- Latest workflow run: `37201016041`
+- Result: all release steps passed in 3m22s
 
 The downloaded public APK was independently checked on this PC with
 `apksigner verify`. It verifies with APK Signature Scheme v2 and the same
@@ -249,6 +249,7 @@ moving that tag, the fix was committed and a higher tag was created:
 ```text
 android-v0.1.0  failed CI history
 android-v0.1.1  first successful public release
+android-v0.1.2  visible version, backup hardening, Obtainium update test
 ```
 
 This keeps published Git history understandable and avoids different people
@@ -268,8 +269,8 @@ git status --short
 
 ./gradlew testDebugUnitTest lintDebug assembleDebug
 
-git tag -a android-v0.1.2 -m "Tello Native Android 0.1.2"
-git push origin android-v0.1.2
+git tag -a android-v0.1.3 -m "Tello Native Android 0.1.3"
+git push origin android-v0.1.3
 gh run watch --repo JAlcocerT/tello-kotlin --exit-status
 ```
 

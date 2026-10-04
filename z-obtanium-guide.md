@@ -34,7 +34,9 @@ Current progress:
 - [x] Signed release built and verified locally
 - [x] `android-v0.1.0` CI attempt diagnosed as an obsolete SDK setup failure
 - [x] Corrected `android-v0.1.1` release published and independently verified
-- [ ] Obtainium configured on the phone
+- [x] Obtainium configured and `android-v0.1.1` validated on a Pixel 9 Pro
+- [x] Low-risk `android-v0.1.2` update published and independently verified
+- [ ] Obtainium in-place update to `android-v0.1.2` confirmed on the phone
 
 ## What you need
 
@@ -402,8 +404,8 @@ Example for the next patch release:
 ```bash
 git switch main
 git pull --ff-only origin main
-git tag -a android-v0.1.2 -m "Tello Native Android 0.1.2"
-git push origin android-v0.1.2
+git tag -a android-v0.1.3 -m "Tello Native Android 0.1.3"
+git push origin android-v0.1.3
 ```
 
 Android accepts the Obtainium update when all of these remain true:
@@ -478,6 +480,6 @@ Before the first Obtainium release:
 - [x] Public release contains the correctly named APK.
 - [x] Downloaded release APK signature is verified.
 - [ ] Debug/test-signed copy is uninstalled from the phone.
-- [ ] Obtainium is configured with the public repository URL.
-- [ ] First release installs successfully.
+- [x] Obtainium is configured with the public repository URL.
+- [x] First release installs successfully on a Pixel 9 Pro.
 - [ ] A second release proves that Obtainium updates in place.

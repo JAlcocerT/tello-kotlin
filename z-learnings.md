@@ -320,10 +320,30 @@ Signing certificate: f0ada1be3083d3e37a5c3e9222d5978854e3c3c67a91a5323e42c388133
 The public asset was downloaded to the PC and independently passed
 `apksigner verify` using APK Signature Scheme v2.
 
+Release `android-v0.1.2` was intentionally kept low-risk to validate Obtainium
+updates without changing flight, networking, or video behavior. It adds a
+visible version in the top bar, changes `android:allowBackup` to `false`, and
+records successful Pixel 9 Pro use. Local unit tests, lint, and debug assembly
+passed 53 tasks. GitHub Actions passed all release steps in 3m22s.
+
+The downloaded public `v0.1.2` APK was independently verified with:
+
+```text
+Package: tech.jalcocer.tello
+Version code: 3
+Version name: android-v0.1.2
+Asset: tello-native-android-v0.1.2.apk
+Size: 1,643,155 bytes
+SHA-256: 670f08cfb87480279d11a2b71b5b555258d62325e17c896609acae94516b1bca
+Signing certificate: f0ada1be3083d3e37a5c3e9222d5978854e3c3c67a91a5323e42c3881337898e
+Android backup: disabled
+```
+
 ## Remaining physical test plan
 
 1. Store a second encrypted/off-device backup of the final signing key.
-2. Add the public repository URL to Obtainium and install `android-v0.1.1`.
+2. Confirm Obtainium updates the Pixel 9 Pro from `v0.1.1` to `v0.1.2` in
+   place and that the top bar shows `v0.1.2`.
 3. With propellers removed, test Wi-Fi selection, command mode, telemetry,
    video, photo, and recording.
 4. Play the saved MP4 and inspect the photo before flight.
