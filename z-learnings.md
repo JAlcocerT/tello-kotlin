@@ -339,18 +339,22 @@ Signing certificate: f0ada1be3083d3e37a5c3e9222d5978854e3c3c67a91a5323e42c388133
 Android backup: disabled
 ```
 
+Obtainium detected `android-v0.1.2`, notified the Pixel 9 Pro, and updated the
+existing `v0.1.1` installation in place. The app then displayed `v0.1.2` in its
+top bar. This proves the public release URL, asset filter, increasing version
+code, package ID, and permanent signing certificate all work together for
+repeatable updates without uninstalling the app.
+
 ## Remaining physical test plan
 
 1. Store a second encrypted/off-device backup of the final signing key.
-2. Confirm Obtainium updates the Pixel 9 Pro from `v0.1.1` to `v0.1.2` in
-   place and that the top bar shows `v0.1.2`.
-3. With propellers removed, test Wi-Fi selection, command mode, telemetry,
+2. With propellers removed, test Wi-Fi selection, command mode, telemetry,
    video, photo, and recording.
-4. Play the saved MP4 and inspect the photo before flight.
-5. Fit propeller guards and test at low altitude in a clear indoor space.
-6. Confirm movement, altitude, yaw, STOP, slow/fast mode, and acceleration.
-7. Background the app while hovering and verify the safety landing.
-8. Test one flip direction at a time only after basic control is reliable.
+3. Play the saved MP4 and inspect the photo before flight.
+4. Fit propeller guards and test at low altitude in a clear indoor space.
+5. Confirm movement, altitude, yaw, STOP, slow/fast mode, and acceleration.
+6. Background the app while hovering and verify the safety landing.
+7. Test one flip direction at a time only after basic control is reliable.
 
 ## Standalone repository
 

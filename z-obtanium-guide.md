@@ -36,7 +36,7 @@ Current progress:
 - [x] Corrected `android-v0.1.1` release published and independently verified
 - [x] Obtainium configured and `android-v0.1.1` validated on a Pixel 9 Pro
 - [x] Low-risk `android-v0.1.2` update published and independently verified
-- [ ] Obtainium in-place update to `android-v0.1.2` confirmed on the phone
+- [x] Obtainium in-place update to `android-v0.1.2` confirmed on the phone
 
 ## What you need
 
@@ -482,4 +482,4 @@ Before the first Obtainium release:
 - [ ] Debug/test-signed copy is uninstalled from the phone.
 - [x] Obtainium is configured with the public repository URL.
 - [x] First release installs successfully on a Pixel 9 Pro.
-- [ ] A second release proves that Obtainium updates in place.
+- [x] A second release proves that Obtainium updates in place.

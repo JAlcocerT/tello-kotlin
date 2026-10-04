@@ -19,6 +19,8 @@ Kotlin project.
   `f0ada1be3083d3e37a5c3e9222d5978854e3c3c67a91a5323e42c3881337898e`
 - Latest workflow run: `37201016041`
 - Result: all release steps passed in 3m22s
+- Obtainium result: update notification received and `v0.1.1` updated in place
+  to `v0.1.2` on a Pixel 9 Pro
 
 The downloaded public APK was independently checked on this PC with
 `apksigner verify`. It verifies with APK Signature Scheme v2 and the same

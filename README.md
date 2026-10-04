@@ -38,8 +38,9 @@ video timing, or flight. Those require the physical drone and an Android phone.
 ## Verified device
 
 The signed production app has been installed through Obtainium and successfully
-validated on a Google Pixel 9 Pro. Release `android-v0.1.2` also displays its
-version in the top bar so an in-place Obtainium update can be confirmed visually.
+validated on a Google Pixel 9 Pro. Obtainium notified the phone about release
+`android-v0.1.2`, updated it in place, and the top bar visibly confirmed the new
+version.
 
 ## Obtainium releases
 
