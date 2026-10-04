@@ -35,6 +35,12 @@ opposing controls, and the stale-input watchdog. An emulator can verify the UI,
 permissions, lifecycle, and media APIs, but it cannot validate real Tello Wi-Fi,
 video timing, or flight. Those require the physical drone and an Android phone.
 
+## Verified device
+
+The signed production app has been installed through Obtainium and successfully
+validated on a Google Pixel 9 Pro. Release `android-v0.1.2` also displays its
+version in the top bar so an in-place Obtainium update can be confirmed visually.
+
 ## Obtainium releases
 
 Use signed GitHub release APKs for Obtainium. Configure these repository secrets:
@@ -44,7 +50,7 @@ Use signed GitHub release APKs for Obtainium. Configure these repository secrets
 - `ANDROID_KEY_ALIAS`
 - `ANDROID_KEY_PASSWORD`
 
-Then push a tag such as `android-v0.1.0`. The release workflow builds a signed
+Then push a tag such as `android-v0.1.2`. The release workflow builds a signed
 APK and attaches it to a GitHub release. In Obtainium, add this repository's
 GitHub URL and select the APK release asset.
 

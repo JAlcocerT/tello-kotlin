@@ -16,7 +16,7 @@ android {
         minSdk = 29
         targetSdk = 36
         versionCode = providers.environmentVariable("ANDROID_VERSION_CODE").orNull?.toIntOrNull() ?: 1
-        versionName = providers.environmentVariable("ANDROID_VERSION_NAME").orNull ?: "0.1.0"
+        versionName = providers.environmentVariable("ANDROID_VERSION_NAME").orNull ?: "0.1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

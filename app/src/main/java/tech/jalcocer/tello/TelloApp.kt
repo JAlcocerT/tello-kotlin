@@ -60,6 +60,7 @@ private val Green = Color(0xFF65E69F)
 private val Red = Color(0xFFFF656D)
 private val Amber = Color(0xFFFFD166)
 private val Muted = Color(0xFF8DA1A8)
+private val DisplayVersion = "v${BuildConfig.VERSION_NAME.removePrefix("android-v").removePrefix("v")}"
 
 @Composable
 fun TelloApp(model: TelloViewModel, onConnect: () -> Unit) {
@@ -99,7 +100,7 @@ fun TelloApp(model: TelloViewModel, onConnect: () -> Unit) {
 private fun TopBar(state: FlightUiState, onConnect: () -> Unit, onDisconnect: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         Text("◆ TELLO", color = Cyan, fontWeight = FontWeight.Black, fontSize = 18.sp)
-        Text("  NATIVE ANDROID", color = Muted, fontWeight = FontWeight.Bold, fontSize = 9.sp)
+        Text("  NATIVE ANDROID · $DisplayVersion", color = Muted, fontWeight = FontWeight.Bold, fontSize = 9.sp)
         Spacer(Modifier.width(20.dp))
         Text(
             if (state.connected) "● CONNECTED" else "● OFFLINE",
